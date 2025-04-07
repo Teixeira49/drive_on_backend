@@ -18,6 +18,19 @@ const budgets = [
   { userId: 2, department: 'RRHH', assigned: 1000, used: 250, lastUpdated: '2025-03-28' },
 ];
 
+const budgetsTransactions = [
+  { userId: 2, operation: 500, date: '2024-11-22T19:42:52', by: 'ACME Corp.', for: 'YOU' },
+  { userId: 2, operation: -80, date: '2024-11-25T09:12:18', by: 'YOU', for: 'Taller Mecánico Rápido' },
+  { userId: 2, operation: 300, date: '2024-11-29T10:15:22', by: 'Secure Contact', for: 'YOU' },
+  { userId: 2, operation: 200, date: '2024-12-05T08:30:45', by: 'ACME Corp.', for: 'YOU' },
+  { userId: 2, operation: -65, date: '2024-12-18T16:30:45', by: 'YOU', for: 'Hospital Central' },
+  { userId: 2, operation: 150, date: '2025-01-15T14:20:10', by: 'Secure Contact', for: 'YOU' },
+  { userId: 2, operation: -45, date: '2025-01-22T13:15:22', by: 'YOU', for: 'Farmacia Salud' },
+  { userId: 2, operation: 100, date: '2025-02-22T11:45:33', by: 'ACME Corp.', for: 'YOU' },
+  { userId: 2, operation: -35, date: '2025-02-28T10:45:10', by: 'YOU', for: 'Constructora Progreso' },
+  { userId: 2, operation: -25, date: '2025-03-28T12:20:30', by: 'YOU', for: 'Taller Eléctrico Automotriz' },
+];
+
 const securityContacts = [
   { userId: 1, contacts: [{ name: 'Mamá', phone: '+584141234567' }, { name: 'Jose', phone: '+584141234567' }, { name: 'Pedro', phone: '+584141234567' }] },
 ];
@@ -56,8 +69,13 @@ app.post('/security-contacts/:userId', (req, res) => {
 
 // Presupuesto
 app.get('/budget/:userId', (req, res) => {
-  const budget = budgets.find(b => b.userId === parseInt(req.params.userId));
+  var budget = budgets.find(b => b.userId === parseInt(req.params.userId));
   if (!budget) return res.status(404).json({ message: 'Sin presupuesto asignado' });
+  else budget['history'] = budgetsTransactions.filter(t => t.userId === parseInt(req.params.userId));
+  budget.history = budget.history.map(t => {
+    t.date = new Date(t.date).toLocaleString('es-VE', { timeZone: 'America/Caracas' });
+    return t;
+  });
   res.json(budget);
 });
 
